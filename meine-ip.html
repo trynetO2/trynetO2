@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IPInspector.de – Deine IP & Sicherheitsinfos</title>
+  <link rel="icon" type="image/gif" href="favicon.gif">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,26 +19,19 @@
     header {
       background: linear-gradient(to right, #0077cc, #00aaff);
       color: white;
-      padding: 1em;
+      padding: 3em 1em 2em;
       text-align: center;
       position: relative;
     }
-    .logo-small {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 40px;
-      height: auto;
-    }
     .logo-animated {
       display: block;
-      margin: 0 auto;
-      height: 60px;
+      margin: 0 auto 0.5em;
+      height: 80px;
     }
     main {
-      max-width: 900px;
+      max-width: 1200px;
       margin: 2em auto;
-      padding: 1em;
+      padding: 2em;
       background: white;
       border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -47,39 +41,39 @@
     }
     .info-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1em;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5em;
     }
     .info-box {
       background: #e9f3fb;
-      padding: 1em;
-      border-radius: 6px;
+      padding: 2em;
+      border-radius: 8px;
       border: 1px solid #c6e2f5;
+      min-height: 120px;
     }
     .language-switcher {
       text-align: center;
-      margin-top: 1em;
+      margin-top: 2em;
     }
   </style>
 </head>
 <body>
   <header>
-    <img src="animated-logo.gif" alt="Animated Logo" class="logo-animated">
+    <img src="favicon.gif" alt="Suchsymbol Logo" class="logo-animated">
     <h1>IPInspector.de</h1>
-    <img src="logo.png" alt="Logo" class="logo-small">
   </header>
-
   <main>
     <div class="info-grid" id="infoGrid">
-      <div class="info-box"><strong>IP-Adresse:</strong> <span id="ip"></span></div>
+      <div class="info-box"><strong>IPv4:</strong> <span id="ipv4"></span></div>
+      <div class="info-box"><strong>IPv6:</strong> <span id="ipv6"></span></div>
       <div class="info-box"><strong>IP-Version:</strong> <span id="version"></span></div>
       <div class="info-box"><strong>Hostname:</strong> <span id="hostname"></span></div>
       <div class="info-box"><strong>Provider:</strong> <span id="isp"></span></div>
       <div class="info-box"><strong>Land:</strong> <span id="country"></span></div>
       <div class="info-box"><strong>Stadt:</strong> <span id="city"></span></div>
       <div class="info-box"><strong>VPN / Proxy:</strong> <span id="vpn"></span></div>
-      <div class="info-box"><strong>Zeitzone:</strong> <span id="timezone"></span></div>
       <div class="info-box"><strong>Verbindungstyp:</strong> <span id="connection"></span></div>
+      <div class="info-box"><strong>Effektiv:</strong> <span id="effective"></span></div>
       <div class="info-box"><strong>Downlink:</strong> <span id="downlink"></span></div>
       <div class="info-box"><strong>Latenz:</strong> <span id="latency"></span></div>
       <div class="info-box"><strong>Sprache:</strong> <span id="language"></span></div>
@@ -89,7 +83,6 @@
       <div class="info-box"><strong>WebRTC IP:</strong> <span id="webrtc"></span></div>
       <div class="info-box"><strong>DNS Leak Hinweis:</strong> <span id="dns"></span></div>
     </div>
-
     <div class="language-switcher">
       <label for="langSelect">Sprache wechseln:</label>
       <select id="langSelect">
@@ -117,17 +110,26 @@
       try {
         const res = await fetch('https://ipapi.co/json/');
         const data = await res.json();
-        document.getElementById('ip').textContent = data.ip;
-        document.getElementById('version').textContent = data.version || (data.ip.includes(':') ? 'IPv6' : 'IPv4');
-        document.getElementById('hostname').textContent = data.org;
-        document.getElementById('isp').textContent = data.org;
+
+        const ip = data.ip;
+        if (ip.includes(':')) {
+          document.getElementById('ipv6').textContent = ip;
+          document.getElementById('ipv4').textContent = 'Nicht erkannt';
+        } else {
+          document.getElementById('ipv4').textContent = ip;
+          document.getElementById('ipv6').textContent = 'Nicht erkannt';
+        }
+
+        document.getElementById('version').textContent = ip.includes(':') ? 'IPv6' : 'IPv4';
+        document.getElementById('hostname').textContent = data.hostname || 'Nicht verfügbar';
+        document.getElementById('isp').textContent = data.org || 'Nicht verfügbar';
         document.getElementById('country').textContent = data.country_name;
         document.getElementById('city').textContent = data.city;
         document.getElementById('timezone').textContent = data.timezone;
         document.getElementById('language').textContent = navigator.language;
         document.getElementById('os').textContent = navigator.platform;
         document.getElementById('browser').textContent = navigator.userAgent;
-        document.getElementById('vpn').textContent = data.security && data.security.vpn ? 'Ja' : 'Nein';
+        document.getElementById('vpn').textContent = data.security && (data.security.vpn || data.security.proxy || data.security.tor) ? 'Ja' : 'Nein';
         document.getElementById('security').textContent = data.security && (data.security.proxy || data.security.tor) ? 'Verdächtig' : 'Sicher';
       } catch (err) {
         console.error(err);
@@ -138,21 +140,20 @@
       const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
       if (conn) {
         document.getElementById('connection').textContent = conn.type || 'Unbekannt';
+        document.getElementById('effective').textContent = conn.effectiveType || 'N/A';
         document.getElementById('downlink').textContent = conn.downlink ? conn.downlink + ' Mbps' : 'N/A';
         document.getElementById('latency').textContent = conn.rtt ? conn.rtt + ' ms' : 'N/A';
       }
     }
 
     function getWebRTCIP() {
-      let ip;
       const pc = new RTCPeerConnection({iceServers:[]});
       pc.createDataChannel('');
       pc.createOffer().then(offer => pc.setLocalDescription(offer));
       pc.onicecandidate = event => {
         if (event && event.candidate && event.candidate.candidate) {
-          const candidate = event.candidate.candidate;
-          const match = candidate.match(/([0-9]{1,3}(\.[0-9]{1,3}){3})/);
-          ip = match ? match[1] : 'Nicht erkannt';
+          const match = event.candidate.candidate.match(/([0-9]{1,3}(\.[0-9]{1,3}){3})/);
+          const ip = match ? match[1] : 'Nicht erkannt';
           document.getElementById('webrtc').textContent = ip;
           pc.close();
         }
@@ -161,13 +162,13 @@
 
     document.getElementById('langSelect').addEventListener('change', (e) => {
       const selectedLang = e.target.value;
-      window.location.href = `?lang=${selectedLang}`; // Dummy redirect simulation
+      alert(`Sprache: ${selectedLang} – Funktion noch in Arbeit`);
     });
 
     fetchIPInfo();
     fetchConnectionInfo();
     getWebRTCIP();
-    document.getElementById('dns').textContent = 'Kein Leak erkannt'; // Dummy-Status
+    document.getElementById('dns').textContent = 'Kein Leak erkannt';
   </script>
 </body>
 </html>
