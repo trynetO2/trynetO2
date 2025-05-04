@@ -135,20 +135,18 @@
   <script>
     async function fetchIPInfo() {
       try {
-        const res = await fetch('https://ipapi.co/json');
+        const res = await fetch('https://ipwho.is/');
         const data = await res.json();
         const webrtcIP = await getWebRTCLocalIP();
         const infoHtml = `
           <strong>IPv4:</strong> ${data.ip}<br>
-          <strong>IPv6:</strong> ${data.ipv6 || 'Nicht erkannt'}<br>
-          <strong>Hostname:</strong> ${data.hostname || 'Nicht verfügbar'}<br>
-          <strong>Provider:</strong> ${data.org || 'Nicht verfügbar'}<br>
-          <strong>Land:</strong> ${data.country_name}<br>
+          <strong>Hostname:</strong> ${data.connection?.asn || 'Nicht verfügbar'}<br>
+          <strong>Provider:</strong> ${data.connection?.isp || 'Nicht verfügbar'}<br>
+          <strong>Land:</strong> ${data.country}<br>
           <strong>Stadt:</strong> ${data.city}<br>
           <strong>Region:</strong> ${data.region}<br>
-          <strong>Postleitzahl:</strong> ${data.postal}<br>
-          <strong>VPN / Proxy:</strong> ${data.proxy || 'Nicht erkannt'}<br>
-          <strong>Zeitzone:</strong> ${data.timezone}<br>
+          <strong>Zeitzone:</strong> ${data.timezone?.id || '-'}<br>
+          <strong>VPN / Proxy:</strong> ${data.security?.vpn || data.security?.proxy ? 'Erkannt' : 'Nicht erkannt'}<br>
           <strong>Verbindungstyp:</strong> WLAN / LAN<br>
           <strong>Effektiver Verbindungstyp:</strong> ${navigator.connection?.effectiveType || 'Unbekannt'}<br>
           <strong>Downlink:</strong> ${navigator.connection?.downlink || '?'} Mbps<br>
