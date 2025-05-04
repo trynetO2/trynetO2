@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IPInspector.de – Deine IP & Sicherheitsinfos</title>
-  <link rel="icon" type="image/gif" href="favicon.gif">
+  <link rel="icon" type="image/png" href="https://ipinspector.de/favicon.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -108,7 +108,7 @@
 </head>
 <body>
   <header>
-    <img src="https://ipinspector.de/logo.gif" alt="Logo" class="logo-animated">
+    <img src="https://ipinspector.de/logo.png" alt="Logo" class="logo-animated">
     <h1>IPInspector.de</h1>
     <div class="toggle-container">
       <label><input type="checkbox" id="darkModeToggle"> Dunkelmodus</label>
@@ -126,7 +126,7 @@
 
   <main>
     <div class="info-grid" id="infoGrid">
-      <!-- Dynamisch geladene Info-Boxen -->
+      <div class="info-box" id="ipInfo">Lade IP-Daten ...</div>
     </div>
     <div class="language-switcher">
       <label for="langSelect">Sprache wechseln:</label>
@@ -155,6 +155,31 @@
   </footer>
 
   <script>
+    async function fetchIPInfo() {
+      try {
+        const res = await fetch('https://ipapi.co/json');
+        const data = await res.json();
+
+        const infoHtml = `
+          <strong>IPv4:</strong> ${data.ip}<br>
+          <strong>Hostname:</strong> ${data.org || 'Nicht verfügbar'}<br>
+          <strong>Provider:</strong> ${data.org}<br>
+          <strong>Stadt:</strong> ${data.city}<br>
+          <strong>Land:</strong> ${data.country_name}<br>
+          <strong>Region:</strong> ${data.region}<br>
+          <strong>Postleitzahl:</strong> ${data.postal}<br>
+          <strong>Sprache:</strong> ${navigator.language}<br>
+          <strong>Browser:</strong> ${navigator.userAgent}<br>
+          <strong>Betriebssystem:</strong> ${navigator.platform}<br>
+        `;
+        document.getElementById('ipInfo').innerHTML = infoHtml;
+      } catch (e) {
+        document.getElementById('ipInfo').textContent = 'Fehler beim Laden der IP-Daten.';
+      }
+    }
+
+    fetchIPInfo();
+
     document.addEventListener("DOMContentLoaded", () => {
       const userLang = navigator.language || navigator.userLanguage;
       const langCode = userLang.split('-')[0];
