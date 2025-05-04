@@ -3,40 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IPInspector.de – Deine IP & Sicherheitsinfos</title>
-  <link rel="icon" type="image/png" href="https://ipinspector.de/favicon.png">
+  <title>IPInspector – Deine IP-Adresse</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Inter', sans-serif;
       margin: 0;
-      background-color: #f0f4f8;
-      color: #1a1a1a;
-    }
-    header {
-      background-color: #0077cc;
-      color: white;
-      padding: 3em 1em 2em;
-      text-align: center;
-      position: relative;
-    }
-    .logo-animated {
-      display: block;
-      margin: 0 auto 0.5em;
-      height: 70px;
+      font-family: Arial, sans-serif;
+      background-color: #f3f3f3;
+      color: #000;
     }
     nav {
-      background: #005fa3;
-      padding: 0.5em;
+      background: #003366;
+      padding: 1em;
       text-align: center;
     }
     nav a {
       color: white;
-      text-decoration: none;
       margin: 0 1em;
+      text-decoration: none;
       font-weight: bold;
     }
     nav a:hover {
@@ -44,92 +28,47 @@
     }
     main {
       max-width: 1200px;
-      margin: 2em auto;
-      padding: 2em;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin: auto;
+      padding: 2em 1em;
     }
     h1 {
-      margin-top: 0.5em;
+      font-size: 2em;
+      margin-bottom: 1em;
+      text-align: center;
     }
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2em;
+    .info {
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 2em;
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    .info-box {
-      background: #e9f3fb;
-      padding: 2.5em;
-      border-radius: 12px;
-      border: 1px solid #c6e2f5;
-      min-height: 180px;
+    .info p {
+      margin: 1em 0;
       font-size: 1.1em;
     }
-    .language-switcher {
+    footer {
       text-align: center;
-      margin-top: 3em;
-    }
-    select, option {
-      padding: 0.4em;
-      font-size: 1em;
+      font-size: 0.9em;
+      color: #555;
+      margin: 3em 0 1em;
     }
   </style>
 </head>
 <body>
-  <header>
-    <img src="https://ipinspector.de/logo.png" alt="Logo" class="logo-animated">
-    <h1>IPInspector.de</h1>
-  </header>
   <nav>
     <a href="#">Startseite</a>
     <a href="#speedtest">Speedtest</a>
     <a href="#pingtest">Ping Test</a>
     <a href="#dsltest">DSL Test</a>
     <a href="#kabeltest">Kabelspeed Test</a>
+    <a href="#security">Sicherheitsanalyse</a>
   </nav>
   <main>
-    <div class="info-grid" id="infoGrid">
-      <div class="info-box" id="ipInfo">Lade IP-Daten ...</div>
-    </div>
-    <section id="speedtest">
-      <h2>Speedtest</h2>
-      <p>Hier kann später ein Speedtest eingebunden werden.</p>
-    </section>
-    <section id="pingtest">
-      <h2>Ping Test</h2>
-      <p>Hier kann ein Ping-Test-Modul integriert werden.</p>
-    </section>
-    <section id="dsltest">
-      <h2>DSL Test</h2>
-      <p>DSL-spezifische Tests oder Messungen könnten hier erscheinen.</p>
-    </section>
-    <section id="kabeltest">
-      <h2>Kabelspeed Test</h2>
-      <p>Für Kabelanschlüsse vorgesehene Geschwindigkeitstests könnten hier erscheinen.</p>
-    </section>
-    <div class="language-switcher">
-      <label for="langSelect">Sprache wechseln:</label>
-      <select id="langSelect">
-        <option value="de">Deutsch</option>
-        <option value="en">English</option>
-        <option value="ar">العربية</option>
-        <option value="fr">Français</option>
-        <option value="es">Español</option>
-        <option value="tr">Türkçe</option>
-        <option value="ru">Русский</option>
-        <option value="zh">中文</option>
-        <option value="it">Italiano</option>
-        <option value="pt">Português</option>
-        <option value="ja">日本語</option>
-        <option value="ko">한국어</option>
-        <option value="hi">हिन्दी</option>
-        <option value="pl">Polski</option>
-        <option value="nl">Nederlands</option>
-      </select>
-    </div>
+    <h1>Deine IP- und Verbindungsdetails</h1>
+    <div class="info" id="ipInfo">Lade Daten ...</div>
   </main>
-  <footer style="text-align:center; margin: 4em 0 2em; font-size: 0.9em; color: #777;">
+  <footer>
     &copy; 2025 IPInspector.de – Alle Rechte vorbehalten.
   </footer>
   <script>
@@ -139,24 +78,22 @@
         const data = await res.json();
         const webrtcIP = await getWebRTCLocalIP();
         const infoHtml = `
-          <strong>IPv4:</strong> ${data.ip}<br>
-          <strong>Hostname:</strong> ${data.connection?.asn || 'Nicht verfügbar'}<br>
-          <strong>Provider:</strong> ${data.connection?.isp || 'Nicht verfügbar'}<br>
-          <strong>Land:</strong> ${data.country}<br>
-          <strong>Stadt:</strong> ${data.city}<br>
-          <strong>Region:</strong> ${data.region}<br>
-          <strong>Zeitzone:</strong> ${data.timezone?.id || '-'}<br>
-          <strong>VPN / Proxy:</strong> ${data.security?.vpn || data.security?.proxy ? 'Erkannt' : 'Nicht erkannt'}<br>
-          <strong>Verbindungstyp:</strong> WLAN / LAN<br>
-          <strong>Effektiver Verbindungstyp:</strong> ${navigator.connection?.effectiveType || 'Unbekannt'}<br>
-          <strong>Downlink:</strong> ${navigator.connection?.downlink || '?'} Mbps<br>
-          <strong>Latenz:</strong> ${navigator.connection?.rtt || '?'} ms<br>
-          <strong>Sprache:</strong> ${navigator.language}<br>
-          <strong>Browser:</strong> ${navigator.userAgent}<br>
-          <strong>Betriebssystem:</strong> ${navigator.platform}<br>
-          <strong>WebRTC IP:</strong> ${webrtcIP}<br>
-          <strong>DNS Leak Hinweis:</strong> Prüfen Sie Ihren DNS-Provider<br>
-          <strong>Sicherheitsstatus:</strong> Einfach erkannt – keine offenen Ports<br>
+          <p><strong>IPv4:</strong> ${data.ip}</p>
+          <p><strong>Hostname:</strong> ${data.connection?.asn || 'Nicht verfügbar'}</p>
+          <p><strong>Provider (ISP):</strong> ${data.connection?.isp || 'Nicht verfügbar'}</p>
+          <p><strong>Stadt:</strong> ${data.city}</p>
+          <p><strong>Land:</strong> ${data.country}</p>
+          <p><strong>VPN / Proxy / Tor:</strong> ${(data.security?.vpn || data.security?.proxy || data.security?.tor) ? 'Erkannt' : 'Nicht erkannt'}</p>
+          <p><strong>Verbindungstyp:</strong> WLAN / LAN</p>
+          <p><strong>Effektiver Verbindungstyp:</strong> ${navigator.connection?.effectiveType || 'Unbekannt'}</p>
+          <p><strong>Downlink:</strong> ${navigator.connection?.downlink || '?'} Mbps</p>
+          <p><strong>Latenz (RTT):</strong> ${navigator.connection?.rtt || '?'} ms</p>
+          <p><strong>WebRTC IP:</strong> ${webrtcIP}</p>
+          <p><strong>DNS Leak Hinweis:</strong> Verwenden Sie einen DNS Leak Test zur Prüfung.</p>
+          <p><strong>Sprache:</strong> ${navigator.language}</p>
+          <p><strong>Browser:</strong> ${navigator.userAgent}</p>
+          <p><strong>Betriebssystem:</strong> ${navigator.platform}</p>
+          <p><strong>Sicherheitsstatus:</strong> Keine offenen Ports erkannt</p>
         `;
         document.getElementById('ipInfo').innerHTML = infoHtml;
       } catch (e) {
