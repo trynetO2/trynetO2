@@ -2,34 +2,70 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Was ist meine IP-Adresse?</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 50px;
-    }
-    .ip-box {
-      margin-top: 20px;
-      font-size: 24px;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
       color: #333;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 60px auto;
+      background: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #0073e6;
+    }
+
+    .info-box {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #e6f0ff;
+      border-left: 6px solid #0073e6;
+      font-size: 18px;
+    }
+
+    .label {
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <h1>Was ist meine IP-Adresse?</h1>
-  <div class="ip-box" id="ip">Lade IP-Adresse…</div>
+  <div class="container">
+    <h1>Was ist meine IP-Adresse?</h1>
+
+    <div class="info-box" id="ip">IP-Adresse wird geladen...</div>
+    <div class="info-box" id="browser">Browserdaten werden geladen...</div>
+    <div class="info-box" id="plattform">Systemdaten werden geladen...</div>
+  </div>
 
   <script>
+    // IP-Adresse
     fetch('https://api.ipify.org?format=json')
       .then(response => response.json())
       .then(data => {
-        document.getElementById('ip').textContent = "Deine IP-Adresse ist: " + data.ip;
+        document.getElementById('ip').innerHTML = "<span class='label'>Deine IP-Adresse:</span> " + data.ip;
       })
-      .catch(error => {
+      .catch(() => {
         document.getElementById('ip').textContent = "Fehler beim Laden der IP-Adresse.";
-        console.error("Fehler:", error);
       });
+
+    // Browser-Infos
+    const browserInfo = navigator.userAgent;
+    document.getElementById('browser').innerHTML = "<span class='label'>Browser:</span> " + browserInfo;
+
+    // Plattform
+    const platformInfo = navigator.platform;
+    document.getElementById('plattform').innerHTML = "<span class='label'>Betriebssystem:</span> " + platformInfo;
   </script>
 </body>
 </html>
